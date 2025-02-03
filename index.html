@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/L.Control.Layers.Tree.css">
+        <link rel="stylesheet" href="css/qgis2web.css">
+        <link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/leaflet-control-geocoder.Geocoder.css">
+        <link rel="stylesheet" href="css/leaflet-measure.css">
+        <link rel="stylesheet" href="css/style.css">
+
+
+        <style>
+            html, body, #map {
+                width: 100%;
+                height: 100%;
+                padding: 0;
+                margin: 0;
+            }
+            .leaflet-control-layers {
+                top: 50px;
+                right: 10px;
+            }
+
+
+
+            #map-title {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%; /* Makes it cover the entire width */
+    background: rgba(255, 255, 255, 0.7);
+    padding: 15px 0; /* Adjust padding as needed */
+    font-size: 24px;
+    font-weight: bold;
+    z-index: 1000;
+    text-align: center; /* Centers the text */
+    border-radius: 0; /* Removes border radius to fit fully */
+    white-space: nowrap;
+}
+
+
+   
+
+       
+
+
+        </style>
+        <title></title>
+    </head>
+    <body>
+        <div id="map-title">JK UAV</div>
+<div id="map"></div>
+<div id="menu-container">
+    <details>
+        <summary id="menu-button">FLIGHT LOG FORM</summary>
+        <iframe src="https://forms.gle/dKtn56K2U8q9HnE4A" width="640" height="500" frameborder="0" marginheight="0" marginwidth="0">Loading...</iframe>
+    </details>
+</div>
+
+        
+        <script src="js/leaflet.js"></script>
+<script src="js/leaflet.rotatedMarker.js"></script>
+<script src="js/leaflet.pattern.js"></script>
+<script src="js/leaflet-hash.js"></script>
+<script src="js/Autolinker.min.js"></script>
+<script src="js/rbush.min.js"></script>
+<script src="js/labelgun.min.js"></script>
+<script src="js/labels.js"></script>
+<script src="js/leaflet-control-geocoder.Geocoder.js"></script>
+<script src="js/leaflet-measure.js"></script>
+<script src="js/qgis2web_expressions.js"></script>
+<script src="js/script.js"></script>
+<script src="js/L.Control.Layers.Tree.min.js"></script>
+        <script>
+            var map = L.map('map', {
+                zoomControl: false,
+                maxZoom: 28,
+                minZoom: 1
+            }).fitBounds([[1.5336922922526939, 103.74885008571444], [1.5520966764306885, 103.7901307699238]]);
+            var hash = new L.Hash(map);
+            map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+            var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+
+            // Add zoom control
+            var zoomControl = L.control.zoom({
+                position: 'topleft'
+            }).addTo(map);
+
+            // Add measure control
+            var measureControl = new L.Control.Measure({
+                position: 'topleft',
+                primaryLengthUnit: 'meters',
+                secondaryLengthUnit: 'kilometers',
+                primaryAreaUnit: 'sqmeters',
+                secondaryAreaUnit: 'hectares'
+            });
+            measureControl.addTo(map);
+            document.getElementsByClassName('leaflet-control-measure-toggle')[0].innerHTML = '';
+            document.getElementsByClassName('leaflet-control-measure-toggle')[0].className += ' fas fa-ruler';
+
+            // OpenStreetMap and Satellite Layer
+            var openStreetMapLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; OpenStreetMap contributors'
+            });
+
+            var satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                maxZoom: 19,
+                attribution: 'Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community'
+            });
+
+            // Add OpenStreetMap by default
+            openStreetMapLayer.addTo(map);
+
+            // Add layers control with options to switch between OpenStreetMap and Satellite
+            var baseLayers = {
+                "OpenStreetMap": openStreetMapLayer,
+                "Satellite": satelliteLayer
+            };
+
+            var layersControl = L.control.layers(baseLayers, {}, {position: 'topright'}).addTo(map);
+
+            // Add other image overlays as per your existing code
+            var img_TMN_1 = 'data/TMN_1.png';
+            var img_bounds_TMN_1 = [
+                [1.5396160426470156, 103.76202806227117],
+                [1.5438491906387786, 103.76870089953549]
+            ];
+            var layer_TMN_1 = new L.imageOverlay(
+                img_TMN_1,
+                img_bounds_TMN_1,
+                { interactive: true }
+            );
+            map.addLayer(layer_TMN_1);
+
+            // Show popup on image click
+            layer_TMN_1.on('click', function () {
+                L.popup({ autoPan: false })
+                    .setLatLng([1.541000, 103.765000])
+                    .setContent(`
+                        <h3>TAMAN DAYA</h3>
+                        <h4>Mukim: Tebrau</h4>
+                        <h4>Daerah: Johor Bahru</h4>
+                        <h4>Negeri: Johor Darul Takzim</h4>
+                        <p>Longitude: 103.765000</p>
+                        <p>Latitude: 1.541000</p>
+                        <p>Work Order No: UAV/0824/033</p>
+                        <p>File No UAV: UAV-D02-008-24</p>
+                        <p>Survey date: Aug 2024</p>
+                        <img src="data/TMN_1.png" alt="TAMAN DAYA" style="width: 100%; max-width: 300px; border: 1px solid #ccc;" />
+                    `)
+                    .openOn(map);
+            });
+
+            // Define the second orthophoto image overlay with its bounds
+            var image2Bounds = [
+                [1.5104105, 103.9161672],  // Southwest corner of second image
+                [1.5307852, 103.9289895]   // Northeast corner of second image
+            ];
+            var orthophoto2 = L.imageOverlay('PLENTONG.png', image2Bounds, { interactive: true }).addTo(map);
+
+            // Show popup on second image click
+            orthophoto2.on('click', function() {
+                L.popup({ autoPan: false }) // Disable auto-panning on popups
+                    .setLatLng([1.5307852, 103.9161672])
+                    .setContent('<h3>PLENTONG</h3><p>Longitude: 103.9161672</p><p>Latitude: 1.5307852</p> <img src="data/PLENTONG.png" alt="PLENTONG" style="width: 100%; max-width: 300px; border: 1px solid #ccc;" />')
+                    .openOn(map);
+            });
+
+            // Add the new image layer for WONG AH FOOK
+            var wongAhFookBounds = [
+                [1.457972, 103.7606181],
+                [1.4645654, 103.7673718]
+            ];
+            var wongAhFookLayer = new L.imageOverlay('data/WONG.png', wongAhFookBounds, { interactive: true }).addTo(map);
+
+            // Show popup for WONG AH FOOK on image click
+            wongAhFookLayer.on('click', function () {
+                L.popup({ autoPan: false })
+                    .setLatLng([1.461268, 103.763994]) // Coordinates near the middle of the image
+                    .setContent(`
+                        <h3>WONG AH FOOK</h3>
+                        <h4>Mukim: Bandar Johor Bahru</h4>
+                        <h4>Daerah: Johor Bahru</h4>
+                        <h4>Negeri: Johor Darul Takzim</h4>
+                        <p>Longitude: 103.763994</p>
+                        <p>Latitude: 1.461268</p>
+                        <p>Work Order No: UAV/1124/047</p>
+                        <p>File No UAV: UAV-D04-019-24</p>
+                        <p>Survey date: Aug 2024</p>
+                        <img src="data/WONG.png" alt="WONG AH FOOK" style="width: 100%; max-width: 120px; border: 1px solid #ccc;" />
+                    `)
+                    .openOn(map);
+            });
+
+           // Add the new image layer for BATU FERINGGI
+var BATUFERINGGIBounds = [
+    [5.4708841, 100.2726129], // Southwest corner
+    [5.4786149, 100.279131]  // Northeast corner
+];
+
+var BATUFERINGGILayer = new L.imageOverlay(
+    'data/BATU FERINGGI.png', // Path to the image file
+    BATUFERINGGIBounds, 
+    { interactive: true }    // Makes the layer clickable
+).addTo(map);
+
+// Add a click event listener for the BATU FERINGGI layer
+BATUFERINGGILayer.on('click', function () {
+    // Create and display a popup near the middle of the image
+    L.popup({ autoPan: false })
+        .setLatLng([5.4747495, 100.27587195]) // Approximate center of the bounds
+        .setContent(`
+            <h3>BATU FERINGGI</h3>
+             <h4>Mukim: Bandar Batu Feringgi</h4>
+            <h4>Daerah: Timor Laut</h4>
+            <h4>Negeri: Pulau Pinang</h4>
+            <p>Longitude: 100.27587195</p>
+            <p>Latitude: 5.4747495</p>
+            <p>Work Order No: UAV/0824/033</p>
+             <p>File No UAV: UAV-D04-020-24</p>
+             <p>Survey date: Dec 2024</p>
+            <img src="data/BATU FERINGGI.png" alt="BATU FERINGGI" 
+             style="width: 100%; max-width: 100px; border: 1px solid #ccc;" />
+        `)
+        .openOn(map);
+});
+
+
+            var osmGeocoder = new L.Control.Geocoder({
+                collapsed: true,
+                position: 'topleft',
+                text: 'Search',
+                title: 'Testing'
+            }).addTo(map);
+            document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+            .className += ' fa fa-search';
+            document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+            .title += 'Search for a place';
+            setBounds();
+            L.ImageOverlay.include({
+                getBounds: function () {
+                    return this._bounds;
+                }
+            });
+
+            // Initialize the map and set its view to Johor Bahru's coordinates
+            var map = L.map('map', {
+                    center: [1.4927, 103.7414], 
+                    zoom: 13,
+                    closePopupOnClick: false // Prevents the map from auto-panning when clicking
+                });
+
+            // Define basemap layers
+            var openStreetMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; OpenStreetMap contributors'
+            });
+
+            var satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                maxZoom: 19,
+                attribution: 'Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community'
+            });
+
+            
+        </script>
+    </body>
+</html>
