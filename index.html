@@ -178,7 +178,7 @@
                 [1.457972, 103.7606181],
                 [1.4645654, 103.7673718]
             ];
-            var wongAhFookLayer = new L.imageOverlay('data/WONG.png', wongAhFookBounds, { interactive: true }).addTo(map);
+            var wongAhFookLayer = new L.imageOverlay('data/wong.png', wongAhFookBounds, { interactive: true }).addTo(map);
 
             // Show popup for WONG AH FOOK on image click
             wongAhFookLayer.on('click', function () {
@@ -194,7 +194,7 @@
                         <p>Work Order No: UAV/1124/047</p>
                         <p>File No UAV: UAV-D04-019-24</p>
                         <p>Survey date: Aug 2024</p>
-                        <img src="data/WONG.png" alt="WONG AH FOOK" style="width: 100%; max-width: 120px; border: 1px solid #ccc;" />
+                        <img src="data/wong.png" alt="WONG AH FOOK" style="width: 100%; max-width: 120px; border: 1px solid #ccc;" />
                     `)
                     .openOn(map);
             });
