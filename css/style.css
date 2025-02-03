@@ -1,0 +1,30 @@
+/* Map container */
+#map {
+    width: 100%;
+    height: 100vh; /* Full viewport height */
+    position: relative; /* Keeps the map's position intact */
+    background-color: #e0e0e0; /* Placeholder color */
+}
+
+/* Menu button container positioned on top of the map */
+#menu-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1000; /* Ensures the menu stays on top of the map */
+}
+
+#menu-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+details[open] summary {
+    background-color: #4CAF50;
+    color: white;
+}
